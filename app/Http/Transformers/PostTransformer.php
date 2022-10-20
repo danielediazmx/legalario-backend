@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Transformers;
 
 use App\Models\Post;
@@ -16,6 +17,8 @@ class PostTransformer extends TransformerAbstract
             "user_id" => $post->user_id,
             "created_at" => $post->created_at,
             "updated_at" => $post->updated_at,
+            "user" => $post->user,
+            "comments" => $post->comments
         ];
     }
 }

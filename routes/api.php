@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('post/comment', CommentController::class);
 
     Route::prefix('admin')->group(function () {
-        Route::get('/post', 'App\Http\Controllers\Api\admin\PostController@index');
+        Route::get('/post/status/{post_id}/{status}', 'App\Http\Controllers\Api\admin\PostController@switchStatus');
     });;
 });
 

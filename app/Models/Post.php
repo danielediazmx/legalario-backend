@@ -20,12 +20,29 @@ class Post extends Model
         'user_id',
     ];
 
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function comments() {
+        return $this->hasMany(PostComment::class, 'post_id', 'id')->with('user');
+    }
+
     public function scopeWhereStatus($query, $status)
     {
-        if (!$status) {
+        if ($status == null) {
             return $query->whereNot('status', Post::REJECTED);
+        } else if ($status == '*') {
+            return $query;
         }
         return $query->where('status', $status);
+    }
+
+    public function scopeWhereUserId($query, $userId)
+    {
+        if (!$userId) return $query;
+        return $query->where('user_id', $userId);
     }
 
     public function scopeWhereCreatedBetween($query, $startDate, $endDate)

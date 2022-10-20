@@ -16,8 +16,19 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::where('status', Post::ACTIVE)->get();
+        $startDate = $_GET['start_date'] ?? null;
+        $endDate = $_GET['end_date'] ?? null;
+        $userId = $_GET['user_id'] ?? null;
+        $status = $_GET['status'] ?? Post::ACTIVE;
+
+        $posts = Post::whereStatus($status)->whereCreatedBetween($startDate, $endDate)->whereUserId($userId)->get();
         return fractal($posts, new PostTransformer())->respond(200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function show($id)
+    {
+        $post = Post::find($id);
+        return fractal($post, new PostTransformer())->respond(200, [], JSON_PRETTY_PRINT);
     }
 
     /**
@@ -40,7 +51,7 @@ class PostController extends Controller
             $post = Post::create([
                 'title' => $request->title,
                 'description' => $request->description,
-                'user_id' => $request->user_id,
+                'user_id' => $request->user_id, // this should be Auth::user()->id but I keep this only for testing.
                 'status' => 0
             ]);
 
@@ -91,8 +102,9 @@ class PostController extends Controller
     {
         $post = Post::where(['id' => $id, 'user_id' => Auth::user()->id])->first();
         if ($post) {
-            $post->status = Post::INACTIVE;
-            $post->save();
+            /*$post->status = Post::INACTIVE;
+            $post->save();*/
+            $post->delete();
         }
 
         return response()->json(['status' => (bool)$post]);
